@@ -535,7 +535,7 @@ def mainService(svrno):
                     if ordtype == 1:
                         print("주문실행 설정", str(ordtype))
                         if mywon >= bidprice:
-                            each_trade(keys[0],keys[1],coinn,bidmargin,uno)
+                            each_trade(keys[0],keys[1],coinn,bidprice,bidmargin,uno)
                         else:
                             print("현금 부족으로 1차 주문 패스 (보유현금 :", str(mywon), ")")
                     elif ordtype == 2:
