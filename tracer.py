@@ -500,10 +500,10 @@ def mainService(svrno):
                         continue
                     elif cntpost-1 < setup[3]: #마지막 단계
                         bidintv = 0.2
-                        bidmargin = 0.3
+                        bidmargin = 0.35
                     else:
                         bidintv = 0.2
-                        bidmargin = 0.3
+                        bidmargin = 0.35
                     if coinn in ["KRW-ADA", "KRW-ALGO", "KRW-BLUR", "KRW-CELO", "KRW-ELF", "KRW-EOS", "KRW-GRS", "KRW-GRT", "KRW-ICX", "KRW-MANA", "KRW-MINA", "KRW-POL", "KRW-SAND", "KRW-SEI", "KRW-STG", "KRW-TRX"]:
                         bideaprice = calprice2(float(curprice * (1 - bidintv / 100)),uno) #목표 단가
                     else:
