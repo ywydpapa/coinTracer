@@ -283,7 +283,6 @@ def get_trend(coinn , uno):
 def add_new_bid(key1, key2, coinn, bidprice, bidvol, uno):
     try:
         ret = buylimitpr(key1, key2, coinn, bidprice, bidvol, uno)
-        tradelog(uno,"BID", coinn, datetime.now()) #주문 기록
         return ret
     except Exception as e:
         msg = "추가매수 진행 에러 "+str(e)
@@ -334,8 +333,6 @@ def first_trade(key1, key2, coinn, initAsset, intergap, profit, uno):
 def each_trade(key1, key2, coinn, initAsset, profit, uno):
     global buyrest, bidasset, bidcnt, askcnt
     print("새로운 주문 함수 실행")
-    #cancelaskorder(key1, key2, coinn, uno)  # 기존 매도 주문 모두 취소
-    #canclebidorder(key1, key2, coinn, uno)  # 기존 매수 주문 모두 취소
     preprice = pyupbit.get_current_price(coinn)  # 현재값 로드
     try:
         bidasset = initAsset #매수 금액
@@ -357,7 +354,7 @@ def each_trade(key1, key2, coinn, initAsset, profit, uno):
             setprice = calprice(setprice, uno)
         setvolume = traded['balance']
         selllimitpr(key1, key2, coinn, setprice, setvolume, uno)
-        print("1단계 매도 실행 완료")
+        print("매도 실행 완료")
     return None
 
 
@@ -403,38 +400,37 @@ def mainService(svrno):
                             vcoinprice = float(coin["avg_buy_price"])
                             vcoinamt = myvcoin * vcoinprice
                             print(str(vcoin),":",str(myvcoin), "Price :", str(vcoinprice))
-                # 지갑내용 받아오기 - 해당 코인만
                     coinn = "KRW-"+vcoin
                     curprice = pyupbit.get_current_price(coinn)
                     print("코인 현재 시장가", str(curprice))
                     print("최초 매수 설정 금액 ", str(setup[2]) )
-                    myorders = upbit.get_order(coinn, state='wait')
+                    myorders = upbit.get_order(coinn, state='wait') #대기중 주문 조회
                     cntask = 0 #매도 주문수
                     cntbid = 0 #매수 주문수
-                    lastbidsec = 0
+                    lastbidsec = 0 #최종 주문 시간
                     if myorders is not None:
                         for order in myorders:
                             nowt = datetime.now()
                             if order["side"] == "ask":
-                                cntask = cntask + 1
+                                cntask = cntask + 1 # 매도 주문수 카운트
                                 last = order["created_at"]
                                 last = last.replace("T", " ")
                                 last = last[:-6]
                                 last = datetime.strptime(last, "%Y-%m-%d %H:%M:%S")
                                 lastbidsec = (nowt - last).seconds
                             elif order["side"] == "bid":
-                                cntbid = cntbid + 1
-                    else:
+                                cntbid = cntbid + 1 #매수 주문 수 카운트
+                    else: # 둘다 없을때 0으로 설정
                         cntask = 0
                         cntbid = 0
                     norasset = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048]
-                    cntpost = 1 #매수 회차 산출 프로세스
+                    cntpost = 0 #매수 회차 산출 프로세스
                     print("현재 매도주문수 ", str(cntask))
                     print("현재 매수주문수 ", str(cntbid))
                     for order in myorders:
                         if order['side'] == 'ask':
                             # amt = float(order['volume']) * float(order['price'])/float(100+setup[5])*100
-                            amt = vcoinamt
+                            amt = vcoinamt #기존 보유 금액
                             print("기존 보유 금액 ", str(amt))
                             addamt = float(amt) + float(setup[2]) #회차 계산용 금액 투입금액 플러스
                             cnt = round(addamt / float(setup[2])) #회차 계산
@@ -492,17 +488,17 @@ def mainService(svrno):
                         bidprice = float(setup[2])
                     else:
                         bidprice = float(setup[2])
-                    print("다음 매수 금액 : ",str(bidprice))
+                    print("매수 설정 금액 : ",str(bidprice))
                     #다음 투자금 확인
-                    trsets = setdetail(setup[8]) #상세 투자 설정
-                    intvset = trsets[4:13] #투자설정 간격
-                    marginset = trsets[14:23] #투자설정 이율
+                    trsets = setdetail(setup[8]) #상세 투자 설정 Trace 로 설정 변경
+                    intvset = 0
+                    marginset = 0
                     if cntpost-1 >= setup[3]:
                         print("사용자 ", str(setup[1]), "설정번호 ", str(setup[0]), " 코인 ", str(setup[6]), " 설정치 초과 통과")
                         print("------------------------")
                         time.sleep(0.2)
                         continue
-                    elif cntpost-1 == setup[3]: #마지막 단계
+                    elif cntpost-1 < setup[3]: #마지막 단계
                         bidintv = 0.2
                         bidmargin = 0.3
                     else:
@@ -539,7 +535,7 @@ def mainService(svrno):
                     if ordtype == 1:
                         print("주문실행 설정", str(ordtype))
                         if mywon >= bidprice:
-                            first_trade(keys[0], keys[1], coinn, bidprice, bidintv, bidmargin, uno)
+                            each_trade(keys[0],keys[1],coinn,bidmargin,uno)
                         else:
                             print("현금 부족으로 1차 주문 패스 (보유현금 :", str(mywon), ")")
                     elif ordtype == 2:
@@ -555,18 +551,18 @@ def mainService(svrno):
                     else:
                         print("이번 회차 주문 설정 없음")
                 # 주문 기록
-                    print("사용자 ",str(setup[1]),"설정번호 ",str(setup[0])," 코인 ",str(setup[6]), " 정상 종료")
+                    print("사용자 ",str(setup[1]),"Trace 설정번호 ",str(setup[0])," 코인 ",str(setup[6]), " 정상 종료")
                     print("------------------------")
-                    time.sleep(0.3)
+                    time.sleep(0.2)
             except Exception as e:
                 msg = "사용자 " + str(setup[1]) + "설정번호 " + str(setup[0]) + " 코인 " + str(setup[6]) + " 에러 "+ str(e)
                 print(msg)
                 send_error(msg,uno)
                 continue
     except Exception as e:
-        msg = "메인 루프 에러 :" + str(e)
+        msg = "구간 루프 에러 :" + str(e)
         send_error(msg, uno)
-        print("메인 루프 에러 :", e)
+        print("구간 루프 에러 :", e)
     finally:
         ntime = datetime.now()
         print('$$$$$$$$$$$$$$$$$$$')
@@ -721,6 +717,6 @@ if __name__ == '__main__':
             msg = "메인 while 반복문 에러 : "+str(e)
             send_error(msg, 0 )
         finally:
-            if cnt > 3600:  # 0.5시간 마다 재시작
+            if cnt > 7200:  # 0.5시간 마다 재시작
                 cnt = 1
                 service_restart()
