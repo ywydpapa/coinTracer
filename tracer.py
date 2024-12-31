@@ -14,7 +14,7 @@ from dbconn import tradelog, setdetail
 dotenv.load_dotenv()
 bidcnt = 1
 svrno = os.getenv("server_no")
-mainver = 241229101
+mainver = 241231101
 
 
 def loadmyset(uno):
@@ -666,6 +666,15 @@ def chk_lastbid(coinn, uno, restmin):
             return "SALE"
     else:
         print("직전 구매 이력 없음")
+
+
+def check_gap(curprice, avgprice):
+    gapamt = avgprice - curprice
+    if gapamt < 0:
+        return "POSITIVE"
+    else:
+        return "NEGATIVE"
+
 
 
 def save_holdtime(uno,coinn):
