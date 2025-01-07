@@ -17,16 +17,13 @@ charsetenv = os.getenv("charset")
 
 
 db = pymysql.connect(host=hostenv, user=userenv, password=passwordenv, db=dbenv, charset=charsetenv)
-serverNo = 2
-serviceNo = 240808
-
 
 
 def getsetups(uno):
     db = pymysql.connect(host=hostenv, user=userenv, password=passwordenv, db=dbenv, charset=charsetenv)
     cur13 = db.cursor()
     try:
-        sql = "select * from tradingSetup where userNo=%s and attrib not like %s"
+        sql = "select * from traceSetup where userNo=%s and attrib not like %s"
         cur13.execute(sql, (uno, '%XXXUP'))
         data = list(cur13.fetchone())
         return data
@@ -41,7 +38,7 @@ def getmsetup(uno):
     db = pymysql.connect(host=hostenv, user=userenv, password=passwordenv, db=dbenv, charset=charsetenv)
     cur13 = db.cursor()
     try:
-        sql = "select * from tradingSetup where userNo=%s and attrib not like %s"
+        sql = "select * from traceSetup where userNo=%s and attrib not like %s"
         cur13.execute(sql, (uno, '%XXXUP'))
         data = list(cur13.fetchall())
         return data
@@ -56,7 +53,7 @@ def setonoff(uno,yesno):
     db = pymysql.connect(host=hostenv, user=userenv, password=passwordenv, db=dbenv, charset=charsetenv)
     cur14 = db.cursor()
     try:
-        sql = "UPDATE tradingSetup SET activeYN = %s where userNo=%s AND attrib not like %s"
+        sql = "UPDATE traceSetup SET activeYN = %s where userNo=%s AND attrib not like %s"
         cur14.execute(sql, (yesno, uno,'%XXXUP'))
         db.commit()
     except Exception as e:
@@ -72,7 +69,7 @@ def getseton():
     data = []
     print("GetKey !!")
     try:
-        sql = "SELECT userNo from tradingSetup where attrib not like %s"
+        sql = "SELECT userNo from traceSetup where attrib not like %s"
         cur15.execute(sql,'%XXXUP')
         data = cur15.fetchall()
         return data
@@ -88,7 +85,7 @@ def getsetonsvr(svrNo):
     cur16 = db.cursor()
     data = []
     try:
-        sql = "SELECT distinct userNo from tradingSetup where attrib not like %s and serverNo=%s"
+        sql = "SELECT distinct userNo from traceSetup where attrib not like %s and serverNo=%s"
         cur16.execute(sql,('%XXXUP', svrNo))
         data = cur16.fetchall()
         return data
@@ -103,7 +100,7 @@ def getupbitkey(uno):
     db = pymysql.connect(host=hostenv, user=userenv, password=passwordenv, db=dbenv, charset=charsetenv)
     cur17 = db.cursor()
     try:
-        sql = "SELECT apiKey1, apiKey2 FROM pondUser WHERE userNo=%s and attrib not like %s"
+        sql = "SELECT apiKey1, apiKey2 FROM traceUser WHERE userNo=%s and attrib not like %s"
         cur17.execute(sql, (uno,'%XXXUP'))
         data = cur17.fetchone()
         return data
@@ -129,7 +126,7 @@ def setdetail(setno):
     cur20 = db.cursor()
     row = None
     try:
-        sql = "SELECT * FROM tradingSets WHERE setNo = %s"
+        sql = "SELECT * FROM traceSets WHERE setNo = %s"
         cur20.execute(sql, setno)
         rows = cur20.fetchone()
     except Exception as e:
@@ -160,7 +157,7 @@ def setholdYN(setno, yn):
     db29 = pymysql.connect(host=hostenv, user=userenv, password=passwordenv, db=dbenv, charset=charsetenv)
     cur29 = db29.cursor()
     try:
-        sql = "UPDATE tradingSetup set holdYN = %s where setupNo = %s"
+        sql = "UPDATE traceSetup set holdYN = %s where setupNo = %s"
         cur29.execute(sql, (yn, setno))
         db29.commit()
     except Exception as e:

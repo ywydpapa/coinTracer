@@ -14,7 +14,7 @@ from dbconn import tradelog, setdetail
 dotenv.load_dotenv()
 bidcnt = 1
 svrno = os.getenv("server_no")
-mainver = 241231101
+mainver = 20250107001
 
 
 def loadmyset(uno):
@@ -499,11 +499,11 @@ def mainService(svrno):
                         time.sleep(0.2)
                         continue
                     elif cntpost-1 < setup[3]: #마지막 단계
-                        bidintv = 0.2
-                        bidmargin = 0.35
+                        bidintv = setup[4]
+                        bidmargin = setup[5]
                     else:
-                        bidintv = 0.2
-                        bidmargin = 0.35
+                        bidintv = setup[4]
+                        bidmargin = setup[5]
                     if coinn in ["KRW-ADA", "KRW-ALGO", "KRW-BLUR", "KRW-CELO", "KRW-ELF", "KRW-EOS", "KRW-GRS", "KRW-GRT", "KRW-ICX", "KRW-MANA", "KRW-MINA", "KRW-POL", "KRW-SAND", "KRW-SEI", "KRW-STG", "KRW-TRX"]:
                         bideaprice = calprice2(float(curprice * (1 - bidintv / 100)),uno) #목표 단가
                     else:
@@ -659,7 +659,6 @@ def chk_lastbid(coinn, uno, restmin):
         past = datetime.strptime(lastbid, "%Y-%m-%d %H:%M:%S")
         diff = now - past
         diffmin = diff.seconds / 60
-        print("구매 경과 시간 :", str(diffmin), "분")
         if diffmin <= restmin:
             return "DELAY"
         else:
@@ -674,7 +673,6 @@ def check_gap(curprice, avgprice):
         return "POSITIVE"
     else:
         return "NEGATIVE"
-
 
 
 def save_holdtime(uno,coinn):
