@@ -521,6 +521,11 @@ def mainService(svrno):
                         if activeamt >= amtlimit:
                             print("사용자 ", str(setup[1]), "설정번호 ", str(setup[0]), " 코인 ", str(setup[6]), " 구매 한계 금액 도달 통과")
                             print("------------------------")
+                            if myrestvcoin != 0:
+                                print("잔여 코인 존재: ", myrestvcoin)
+                                order_mod_ask5(keys[0], keys[1], coinn, bidmargin, uno)
+                                print("사용자 ", str(setup[1]), "설정번호 ", str(setup[0]), " 코인 ", str(setup[6]), " 매도 재주문")
+                                print("------------------------")
                             time.sleep(0.2)
                             continue
                     else:
