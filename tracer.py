@@ -432,6 +432,7 @@ def mainService(svrno):
                     else: # 둘다 없을때 0으로 설정
                         cntask = 0
                         cntbid = 0
+
                     norasset = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048]
                     cntpost = 0 #매수 회차 산출 프로세스
                     print("현재 매도주문수 ", str(cntask))
