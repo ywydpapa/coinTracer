@@ -102,29 +102,56 @@ def checktraded(key1, key2, coinn, uno):
         msg = "잔고 확인 에러 " + str(e)
         send_error(msg, uno)
 
+def get_tick_size(price):
+    if price >= 2000000:
+        return 1000
+    elif price >= 1000000:
+        return 500
+    elif price >= 500000:
+        return 100
+    elif price >= 100000:
+        return 50
+    elif price >= 10000:
+        return 10
+    elif price >= 1000:
+        return 1
+    elif price >= 100:
+        return 0.1
+    elif price >= 10:
+        return 0.01
+    elif price >= 1:
+        return 0.001
+    else:
+        return 0.0001
+
+
+def get_tick_size2(price):
+    if price >= 2000000:
+        return 1000
+    elif price >= 1000000:
+        return 500
+    elif price >= 500000:
+        return 100
+    elif price >= 100000:
+        return 50
+    elif price >= 10000:
+        return 10
+    elif price >= 1000:
+        return 1
+    elif price >= 100:
+        return 1
+    elif price >= 10:
+        return 0.01
+    elif price >= 1:
+        return 0.001
+    else:
+        return 0.0001
+
 
 def calprice(bidprice, uno):
     try:
-        if bidprice >= 2000000:
-            bidprice = round(bidprice, -3)
-        elif 1000000 <= bidprice < 20000000:
-            bidprice = round(bidprice, -3) + 500
-        elif 500000 <= bidprice < 1000000:
-            bidprice = round(bidprice, -2)
-        elif 100000 <= bidprice < 500000:
-            bidprice = round(bidprice, -2) + 50
-        elif 10000 <= bidprice < 100000:
-            bidprice = round(bidprice, -1)
-        elif 1000 <= bidprice < 10000:
-            bidprice = round(bidprice)
-        elif 100 <= bidprice < 1000:
-            bidprice = round(bidprice, 1)
-        elif 10 <= bidprice < 100:
-            bidprice = round(bidprice, 2)
-        elif 1 <= bidprice < 10:
-            bidprice = round(bidprice, 3)
-        else:
-            bidprice = round(bidprice, 4)
+        ticksize = get_tick_size(bidprice)
+        bidprice = round(bidprice/ticksize) * ticksize
     except Exception as e:
         msg = "주문 가격 산출 에러 " + str(e)
         send_error(msg, uno)
@@ -134,26 +161,8 @@ def calprice(bidprice, uno):
 
 def calprice2(bidprice, uno):
     try:
-        if bidprice >= 2000000:
-            bidprice = round(bidprice, -3)
-        elif 1000000 <= bidprice < 20000000:
-            bidprice = round(bidprice, -3) + 500
-        elif 500000 <= bidprice < 1000000:
-            bidprice = round(bidprice, -2)
-        elif 100000 <= bidprice < 500000:
-            bidprice = round(bidprice, -2) + 50
-        elif 10000 <= bidprice < 100000:
-            bidprice = round(bidprice, -1)
-        elif 1000 <= bidprice < 10000:
-            bidprice = round(bidprice)
-        elif 100 <= bidprice < 1000:
-            bidprice = round(bidprice)
-        elif 10 <= bidprice < 100:
-            bidprice = round(bidprice, 2)
-        elif 1 <= bidprice < 10:
-            bidprice = round(bidprice, 3)
-        else:
-            bidprice = round(bidprice, 4)
+        ticksize = get_tick_size2(bidprice)
+        bidprice = round(bidprice/ticksize) * ticksize
     except Exception as e:
         msg = "주문 가격 산출 에러 " + str(e)
         send_error(msg, uno)
@@ -493,6 +502,10 @@ def mainService(svrno):
                     trsets = setdetail(setup[8]) #상세 투자 설정 Trace 로 설정 변경
                     intvset = 0
                     marginset = 0
+                    gapsz = trsets[3:13]
+                    intsz = trsets[13:23]
+                    netsz = trsets[23:33]
+                    limsz = trsets[33:43]
                     if cntpost-1 >= setup[3]:
                         print("사용자 ", str(setup[1]), "설정번호 ", str(setup[0]), " 코인 ", str(setup[6]), " 설정치 초과 통과")
                         print("------------------------")
