@@ -432,47 +432,39 @@ def mainService(svrno):
                     else: # 둘다 없을때 0으로 설정
                         cntask = 0
                         cntbid = 0
-
-                    norasset = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048]
                     cntpost = 0 #매수 회차 산출 프로세스
                     print("현재 매도주문수 ", str(cntask))
                     print("현재 매수주문수 ", str(cntbid))
+                    # 상세 설정
+                    trsets = setdetail(setup[8])  # 상세 투자 설정 Trace 로 설정 변경
+                    gapsz = trsets[3:13]
+                    intsz = trsets[13:23]
+                    netsz = trsets[23:33]
+                    limsz = trsets[33:43]
                     for order in myorders:
                         if order['side'] == 'ask':
-                            # amt = float(order['volume']) * float(order['price'])/float(100+setup[5])*100
                             amt = vcoinamt #기존 보유 금액
                             print("기존 보유 금액 ", str(amt))
-                            addamt = float(amt) + float(setup[2]) #회차 계산용 금액 투입금액 플러스
-                            cnt = round(addamt / float(setup[2])) #회차 계산
-                            print("매도량 산출 배수 ", str(cnt))
-                            calamt = cnt * int(setup[2])
-                            if cnt not in norasset:  # 목록에 없을 경우
-                                for i in norasset:
-                                    if cnt >= i:
-                                        cntpost += 1
-                            else:
-                                cntpost = norasset.index(cnt)
+                            cntpost = 1 #회차 계산
+                            for lim in limsz:
+                                if amt > float(lim):
+                                    cntpost += 1
+                                else:
+                                    continue
+                            print(cntpost)
                         elif order['side'] == 'bid':
                             amtb = float(order['volume']) * float(order['price'])
                             print("기존 매수 주문 금액 ", str(amtb))
-                            addamtb = float(amtb) + float(setup[2])
-                            cntb = round(addamtb / float(setup[2]))
-                            print("매수량 산출 배수 ", str(cntb))
                         else:
                             print("기존 매수 없음")
                     if amt == 0:
-                        amt = float(setup[2])
+                        amt = float(netsz[int(cntpost-1)]) #현재 구매 설정 금액
                     if amtb == 0:
                         amtb = 0
                     if addamt == 0:
                         addamt = float(setup[2])
                     print("현재 산출 회차 단계", str(cntpost))
                     print("직전 주문 경과시간 ",str(lastbidsec),"초")
-                    holdstat = ""
-                    if holdcnt <= cntpost:
-                        holdstat = "Y"
-                    else:
-                        holdstat = "N"
                 # 주문 확인
                     if cntask == 0 and cntbid == 0:  #신규주문
                         ordtype = 1
@@ -486,38 +478,18 @@ def mainService(svrno):
                             print("급격하락 1초 딜레이")
                         else:
                             ordtype = 3
-                        if holdstat == "Y":
-                            if lastbidsec <= 900:
-                                ordtype = 0
-                                print("홀드 설정에 의한 15분 딜레이")
-                            else:
-                                ordtype = 3
                     else:
                         ordtype = 0 # 기타
                     if cntbid == 0 and cntask == 0:
-                        bidprice = float(setup[2])
+                        bidprice = float(netsz[int(cntpost-1)])
                     else:
-                        bidprice = float(setup[2])
+                        bidprice = float(netsz[int(cntpost-1)])
                     print("매수 설정 금액 : ",str(bidprice))
                     #다음 투자금 확인
-                    trsets = setdetail(setup[8]) #상세 투자 설정 Trace 로 설정 변경
                     intvset = 0
                     marginset = 0
-                    gapsz = trsets[3:13]
-                    intsz = trsets[13:23]
-                    netsz = trsets[23:33]
-                    limsz = trsets[33:43]
-                    if cntpost-1 >= setup[3]:
-                        print("사용자 ", str(setup[1]), "설정번호 ", str(setup[0]), " 코인 ", str(setup[6]), " 설정치 초과 통과")
-                        print("------------------------")
-                        time.sleep(0.2)
-                        continue
-                    elif cntpost-1 < setup[3]: #마지막 단계
-                        bidintv = setup[4]
-                        bidmargin = setup[5]
-                    else:
-                        bidintv = setup[4]
-                        bidmargin = setup[5]
+                    bidintv = gapsz[int(cntpost-1)]
+                    bidmargin = intsz[int(cntpost-1)]
                     if coinn in ["KRW-ADA", "KRW-ALGO", "KRW-BLUR", "KRW-CELO", "KRW-ELF", "KRW-EOS", "KRW-GRS", "KRW-GRT", "KRW-ICX", "KRW-MANA", "KRW-MINA", "KRW-POL", "KRW-SAND", "KRW-SEI", "KRW-STG", "KRW-TRX"]:
                         bideaprice = calprice2(float(curprice * (1 - bidintv / 100)),uno) #목표 단가
                     else:
