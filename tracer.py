@@ -488,8 +488,8 @@ def mainService(svrno):
                     #다음 투자금 확인
                     intvset = 0
                     marginset = 0
-                    bidintv = gapsz[int(cntpost-1)]
-                    bidmargin = intsz[int(cntpost-1)]
+                    bidintv = gapsz[int(cntpost-1)] #간격 설정
+                    bidmargin = intsz[int(cntpost-1)] #이윤 설정
                     if coinn in ["KRW-ADA", "KRW-ALGO", "KRW-BLUR", "KRW-CELO", "KRW-ELF", "KRW-EOS", "KRW-GRS", "KRW-GRT", "KRW-ICX", "KRW-MANA", "KRW-MINA", "KRW-POL", "KRW-SAND", "KRW-SEI", "KRW-STG", "KRW-TRX"]:
                         bideaprice = calprice2(float(curprice * (1 - bidintv / 100)),uno) #목표 단가
                     else:
