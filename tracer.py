@@ -458,7 +458,7 @@ def mainService(svrno):
                         else:
                             print("기존 매수 없음")
                     if amt == 0:
-                        amt = float(netsz[int(cntpost-1)]) #현재 구매 설정 금액
+                        amt = float(netsz[int(cntpost)]) #현재 구매 설정 금액
                     if amtb == 0:
                         amtb = 0
                     if addamt == 0:
