@@ -14,7 +14,7 @@ from dbconn import tradelog, setdetail
 dotenv.load_dotenv()
 bidcnt = 1
 svrno = os.getenv("server_no")
-mainver = 20250116001
+mainver = 20250117001
 
 
 def loadmyset(uno):
@@ -447,7 +447,7 @@ def mainService(svrno):
                             print("기존 보유 금액 ", str(amt))
                             cntpost = 1 #회차 계산
                             for lim in limsz:
-                                if amt > float(lim):
+                                if amt >= float(lim):
                                     cntpost += 1
                                 else:
                                     continue
