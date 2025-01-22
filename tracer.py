@@ -344,7 +344,7 @@ def each_trade(key1, key2, coinn, initAsset, profit, uno):
     print("새로운 주문 함수 실행")
     preprice = pyupbit.get_current_price(coinn)  # 현재값 로드
     try:
-        bidasset = initAsset #매수 금액
+        bidasset = initAsset+1000 #매수 금액
         buyrest = buymarketpr(key1, key2, coinn, bidasset,uno)  # 첫번째 설정 구매
         print("시장가 구매", str(buyrest))
         time.sleep(0.1)
@@ -451,7 +451,6 @@ def mainService(svrno):
                                     cntpost += 1
                                 else:
                                     continue
-                            print(cntpost)
                         elif order['side'] == 'bid':
                             amtb = float(order['volume']) * float(order['price'])
                             print("기존 매수 주문 금액 ", str(amtb))
