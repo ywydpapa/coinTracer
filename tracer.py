@@ -584,10 +584,20 @@ def service_start():
         myip = (requests.get('https://api.ip.pe.kr/json/').json())['ip']
     except Exception as e:
         myip = "0.0.0.0"
-    msg = "Server " + str(svrno) + " Service Start : " + str(tstamp) + "  at  " + str(myip) + " Service Ver : "+ str(mainver)
+    msg = " ** Server " + str(svrno) + " Service Start : " + str(tstamp) + "  at  " + str(myip) + " Service Ver : "+ str(mainver)
     dbconn.servicelog(msg,0)
     dbconn.serviceStat(svrno, myip, mainver)
     os.system("pip install -r ./requirement.txt")
+
+
+def server_reboot():
+    tstamp = datetime.now()
+    if tstamp.hour == 1 and tstamp.minute == 0 and tstamp.second == 0:
+        msg = " ***** Server " + str(svrno) + " Server Reboot : " + str(tstamp)
+        dbconn.servicelog(msg,0)
+        os.system("sudo reboot")
+    else:
+        pass
 
 
 def send_error(err, uno):
@@ -718,3 +728,6 @@ if __name__ == '__main__':
             if cnt > 7200:  # 0.5시간 마다 재시작
                 cnt = 1
                 service_restart()
+            tstamp = datetime.now()
+            if tstamp.weekday() in [0,2,4]:
+                server_reboot()
