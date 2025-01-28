@@ -14,7 +14,7 @@ from dbconn import tradelog, setdetail
 dotenv.load_dotenv()
 bidcnt = 1
 svrno = os.getenv("server_no")
-mainver = 20250117001
+mainver = 20250128002
 
 
 def loadmyset(uno):
@@ -451,8 +451,13 @@ def mainService(svrno):
                                     cntpost += 1
                                 else:
                                     continue
-                            if cntpost > 10:
+                            if cntpost > 10: #최대 구매 상태 도달
                                 cntpost=10
+                                if amt > float(limsz[cntpost]):
+                                    print("사용자 ", str(setup[1]), "설정번호 ", str(setup[0]), " 코인 ", str(setup[6]),
+                                          " 최종 구매 금액 도달 통과")
+                                    print("------------------------")
+                                    continue
                         elif order['side'] == 'bid':
                             amtb = float(order['volume']) * float(order['price'])
                             print("기존 매수 주문 금액 ", str(amtb))
