@@ -518,7 +518,7 @@ def mainService(svrno):
                                 order_mod_ask5(keys[0], keys[1], coinn, bidmargin, uno)
                                 print("사용자 ", str(setup[1]), "설정번호 ", str(setup[0]), " 코인 ", str(setup[6]), " 매도 재주문")
                                 print("------------------------")
-                            time.sleep(0.2)
+                            time.sleep(0.15)
                             continue
                     else:
                         print("구매한계 금액 설정 없음")
@@ -527,7 +527,7 @@ def mainService(svrno):
                         order_mod_ask5(keys[0], keys[1], coinn, bidmargin, uno)
                         print("사용자 ", str(setup[1]), "설정번호 ", str(setup[0]), " 코인 ", str(setup[6]), " 매도 재주문")
                         print("------------------------")
-                        time.sleep(0.2)
+                        time.sleep(0.15)
                         continue
                     if ordtype == 1:
                         print("주문실행 설정", str(ordtype))
@@ -550,7 +550,7 @@ def mainService(svrno):
                 # 주문 기록
                     print("사용자 ",str(setup[1]),"Trace 설정번호 ",str(setup[0])," 코인 ",str(setup[6]), " 정상 종료")
                     print("------------------------")
-                    time.sleep(0.2)
+                    time.sleep(0.15)
             except Exception as e:
                 msg = "사용자 " + str(setup[1]) + "설정번호 " + str(setup[0]) + " 코인 " + str(setup[6]) + " 에러 "+ str(e)
                 print(msg)
