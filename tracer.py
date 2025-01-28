@@ -451,6 +451,8 @@ def mainService(svrno):
                                     cntpost += 1
                                 else:
                                     continue
+                            if cntpost > 10:
+                                cntpost=10
                         elif order['side'] == 'bid':
                             amtb = float(order['volume']) * float(order['price'])
                             print("기존 매수 주문 금액 ", str(amtb))
