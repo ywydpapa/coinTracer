@@ -14,7 +14,7 @@ from dbconn import tradelog, setdetail
 dotenv.load_dotenv()
 bidcnt = 1
 svrno = os.getenv("server_no")
-mainver = 20250128003
+mainver = 20250131001
 
 
 def loadmyset(uno):
@@ -437,10 +437,13 @@ def mainService(svrno):
                     print("현재 매수주문수 ", str(cntbid))
                     # 상세 설정
                     trsets = setdetail(setup[8])  # 상세 투자 설정 Trace 로 설정 변경
+                    mrate = float(setup[2]/10000)
                     gapsz = trsets[3:13]
                     intsz = trsets[13:23]
                     netsz = trsets[23:33]
+                    netsz = [netsz[i]*mrate for i in range(0,len(netsz))]
                     limsz = trsets[33:43]
+                    limsz = [limsz[k]*mrate for k in range(0,len(limsz))]
                     for order in myorders:
                         if order['side'] == 'ask':
                             amt = vcoinamt #기존 보유 금액
